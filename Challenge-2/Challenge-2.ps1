@@ -4,12 +4,12 @@
 
 # Define the variables
 $interfaceToCapture = "Ethernet"
-$localPath = "C:\\PowerShell\Network"
+$localPath = "C:\PowerShell\Network"
 
 
 
 #################################################################
-## Step 2: Using the "NetEventPacketCapture" PowerSHell Module ##
+## Step 2: Using the "NetEventPacketCapture" PowerShell Module ##
 #################################################################
 
 # Import the module
@@ -60,9 +60,9 @@ Get-Content $localFilePath | Select-String -Pattern "remote=(.*?):(\d+)" -AllMat
 
 
 
-#################################################
-## Step 3: Using the Wireshark from PowerSHell ##
-#################################################
+#############################################
+## Step 3: Using Wireshark from PowerShell ##
+#############################################
 
 # Define a function to capture network traffic
 function Invoke-NetworkCapture {
@@ -75,11 +75,7 @@ function Invoke-NetworkCapture {
     # Define the output file
     $outputFile = "$localPath\capture.pcap"
 
-    # Build the command to capture network traffic
-    $tsharkCommand = "tshark -i $Interface -a duration:$Duration -w $outputFile"
-    if ($CaptureFilter -ne "") {
-        $tsharkCommand += " -f `"$CaptureFilter`""
-    }
+    $tsharkCommand = & "C:\Program Files\Wireshark\tshark.exe" `-i $Interface `-a duration:$Duration `-w $outputFile `-f "$CaptureFilter"
 
     # Execute the command
     Invoke-Expression $tsharkCommand
@@ -94,14 +90,18 @@ function Invoke-NetworkAnalysis {
         [string]$CaptureFile
     )
 
-    # Run analysis with tshark
-    # For the purpose of this example, we'll just count the packets
-    $analysisCommand = "tshark -r $CaptureFile | Measure-Object | Select-Object -ExpandProperty Count"
-    $packetCount = Invoke-Expression $analysisCommand
+    # Assign the command to the variable as a script block
+    $analysisCommand = {
+        & "C:\Program Files\Wireshark\tshark.exe" -r $CaptureFile -T fields -e ip.src -e ip.dst -E separator=',' | ConvertFrom-Csv -Header 'Source IP', 'Destination IP' | Format-Table
+    }
 
-    Write-Host "Total number of packets: $packetCount"
+    # Replace $CaptureFile with the actual path to your .pcap file before running the command
+    $captureFile = "$localPath\capture.pcap"
 
-    # Here you could add more analysis logic, such as filtering for specific protocols, IPs, etc.
+    # Execute the command
+    $packetInfo = Invoke-Command -ScriptBlock $analysisCommand
+
+    return $packetInfo
 }
 
 # Main logic of the script
@@ -122,17 +122,17 @@ Write-Host "Network traffic capture and analysis complete."
 
 
 ###########################################
-## Step 4: Using "netsh" from PowerSHell ##
+## Step 4: Using "netsh" from PowerShell ##
 ###########################################
 
 # Define a function to start network trace
 function Start-NetworkTrace {
     param (
-        [string]$CaptureFileName = "network_trace.etl"
+        [string]$CaptureFileName
     )
 
     # Start the trace
-    netsh trace start capture=yes tracefile=$CaptureFileName
+    netsh trace start capture=yes tracefile="$localPath\$CaptureFileName"                
     Write-Host "Network trace started."
 }
 
@@ -144,21 +144,29 @@ function Stop-NetworkTrace {
 }
 
 # Define a function to analyze the network trace
-function Invoke-NetworkTrace {
+function Invoke-AnalyzeNetworkTrace {
     param (
-        [string]$CaptureFileName
+        [string]$CaptureFileName,
+        [string]$Protocol = ""
     )
 
-    # For the purpose of this example, we will just list the trace file
-    # More complex analysis might require additional tools or scripts
-    Write-Host "Network trace file saved to: $CaptureFileName"
-    
-    # Here you could potentially convert the ETL to a readable format
-    # and then perform analysis using PowerShell
+    # Convert the trace to pcapng format
+    & "$localPath\etl2pcapng.exe" "$localPath\$CaptureFileName" "$localPath\$CaptureFileName.pcapng"
+
+    # CUse WireShark to analyze the trace
+    $analysisCommand = {
+        & "C:\Program Files\Wireshark\tshark.exe" -r "$localPath\$CaptureFileName.pcapng" -T fields -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport -e tcp.len -E separator=',' -Y $Protocol | ConvertFrom-Csv -Header 'Source IP', 'Source Port', 'Destination IP', 'Destination Port' | Format-Table
+    }
+
+    # Execute the command
+    $packetInfo = Invoke-Command -ScriptBlock $analysisCommand  
+
+    # Return the packet information
+    return $packetInfo
 }
 
 # Main logic of the script
-$traceFileName = "$localPath\NetshTrace.etl"
+$traceFileName = "NetshTrace.etl"
 
 # Start capturing network traffic
 Start-NetworkTrace -CaptureFileName $traceFileName
@@ -171,9 +179,5 @@ Start-Sleep -Seconds 30
 Stop-NetworkTrace
 
 # Analyze the captured network trace
-Invoke-NetworkTrace -CaptureFileName $traceFileName
-
-Write-Host "Network traffic capture and analysis complete."
-
-
+Invoke-AnalyzeNetworkTrace -CaptureFileName $traceFileName
 
