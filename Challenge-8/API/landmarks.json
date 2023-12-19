@@ -1,0 +1,62 @@
+[
+    {
+        "id": "1",
+        "landmark": "Eiffel Tower",
+        "city": "Paris",
+        "country": "France"
+    },
+    {
+        "id": "2",
+        "landmark": "Statue of Liberty",
+        "city": "New York City",
+        "country": "USA"
+    },
+    {
+        "id": "3",
+        "landmark": "Great Wall of China",
+        "city": "Beijing",
+        "country": "China"
+    },
+    {
+        "id": "4",
+        "landmark": "Taj Mahal",
+        "city": "Agra",
+        "country": "India"
+    },
+    {
+        "id": "5",
+        "landmark": "Big Ben",
+        "city": "London",
+        "country": "United Kingdom"
+    },
+    {
+        "id": "6",
+        "landmark": "Sydney Opera House",
+        "city": "Sydney",
+        "country": "Australia"
+    },
+    {
+        "id": "7",
+        "landmark": "Colosseum",
+        "city": "Rome",
+        "country": "Italy"
+    },
+    {
+        "id": "8",
+        "landmark": "Christ the Redeemer",
+        "city": "Rio de Janeiro",
+        "country": "Brazil"
+    },
+    {
+        "id": "9",
+        "landmark": "Machu Picchu",
+        "city": "Cusco",
+        "country": "Peru"
+    },
+    {
+        "id": "10",
+        "landmark": "Mount Fuji",
+        "city": "Honshu",
+        "country": "Japan"
+    }
+]

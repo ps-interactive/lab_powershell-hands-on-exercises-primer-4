@@ -1,0 +1,57 @@
+[
+    {
+        "id": "1",
+        "name": "Tech Innovations Inc.",
+        "industry": "Technology",
+        "location": {
+            "address": "1234 Silicon Street",
+            "city": "Techville",
+            "state": "Innovate",
+            "country": "Futuria"
+        }
+    },
+    {
+        "id": "2",
+        "name": "Green Energy Solutions",
+        "industry": "Renewable Energy",
+        "location": {
+            "address": "22 Sunshine Ave",
+            "city": "Solar City",
+            "state": "Renew",
+            "country": "EcoLand"
+        }
+    },
+    {
+        "id": "3",
+        "name": "Global Finance Group",
+        "industry": "Finance",
+        "location": {
+            "address": "1 Money Market",
+            "city": "Capital Town",
+            "state": "Profit",
+            "country": "EconomyLand"
+        }
+    },
+    {
+        "id": "4",
+        "name": "Health & Wellness Co.",
+        "industry": "Healthcare",
+        "location": {
+            "address": "500 Care Blvd",
+            "city": "Wellness City",
+            "state": "Heal",
+            "country": "HealthyNation"
+        }
+    },
+    {
+        "id": "5",
+        "name": "Gourmet Delights Ltd.",
+        "industry": "Food & Beverage",
+        "location": {
+            "address": "789 Gourmet Street",
+            "city": "Taste Town",
+            "state": "Delicious",
+            "country": "FlavorLand"
+        }
+    }
+]
