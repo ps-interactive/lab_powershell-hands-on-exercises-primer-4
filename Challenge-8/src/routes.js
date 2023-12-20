@@ -35,6 +35,7 @@ function userPassAuth(req, res, next) {
     const user = credentials.users.find(u => u.username === username && u.password === password);
 
     if (user) {
+        req.authenticatedUser = user;
         return next();
     }
 
@@ -109,27 +110,46 @@ function searchCompanies(companies, searchText) {
     );
 }
 
-// Search employees based on query
+// Search employees based on query with partial matching
 function searchEmployees(employees, query) {
     return employees.filter(employee => 
-        Object.keys(employee).some(key =>
-            employee[key].toString().toLowerCase().includes(query.toLowerCase())
+        Object.values(employee).some(value => 
+            typeof value === 'object' && value !== null ?
+            Object.values(value).some(subValue => 
+                subValue.toString().toLowerCase().includes(query.toLowerCase())) :
+            value.toString().toLowerCase().includes(query.toLowerCase())
         )
     );
 }
 
-// Select specific fields from the employee data
+// Select specific fields from the employee data, including nested fields
 function selectFields(employees, fields) {
     return employees.map(employee => {
         const selected = {};
+
         fields.forEach(field => {
-            if (employee[field] !== undefined) {
-                selected[field] = employee[field];
+            const fieldParts = field.split('.');
+            let currentObject = employee;
+
+            // Traverse the nested fields
+            for (let i = 0; i < fieldParts.length; i++) {
+                if (currentObject[fieldParts[i]] !== undefined) {
+                    if (i === fieldParts.length - 1) {
+                        // Assign the value directly for both top-level and nested fields
+                        selected[field] = currentObject[fieldParts[i]];
+                    } else {
+                        currentObject = currentObject[fieldParts[i]];
+                    }
+                } else {
+                    break; // Break if any part of the path is undefined
+                }
             }
         });
+
         return selected;
     });
 }
+
 
 // Define routes
 // User routes
@@ -298,19 +318,23 @@ router.get('/apiTokenAuth', apiTokenAuth, (req, res) => {
 });
 
 router.post('/userPassAuth', userPassAuth, (req, res) => {
-    let employees = getEmployees();
-    const searchQuery = req.query.search;
-    const fields = req.query.fields?.split(',');
+    if (req.authenticatedUser) {
+        let employees = getEmployees();
+        const searchQuery = req.body.search;
+        const fields = req.body.fields?.split(',');
 
-    if (searchQuery) {
-        employees = searchEmployees(employees, searchQuery);
+        if (searchQuery && searchQuery !== "*") {
+            employees = searchEmployees(employees, searchQuery);
+        }
+
+        if (fields) {
+            employees = selectFields(employees, fields);
+        }
+
+        res.json(employees);
+    } else {
+        res.status(403).send('Unauthorized access.');
     }
-
-    if (fields) {
-        employees = selectFields(employees, fields);
-    }
-
-    res.json(employees);
 });
 
 module.exports = router;
