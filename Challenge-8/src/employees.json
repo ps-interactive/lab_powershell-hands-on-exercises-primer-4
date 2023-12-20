@@ -1,0 +1,162 @@
+[
+    {
+        "id": "001",
+        "name": "John Doe",
+        "address": "123 Maple Street, Anytown, AT 12345",
+        "officeLocation": "Headquarters",
+        "jobTitle": "Software Engineer",
+        "contactDetails": {
+            "email": "johndoe@example.com",
+            "phone": "555-0100"
+        },
+        "salaryDetails": {
+            "baseSalary": "70000",
+            "currency": "USD",
+            "bonus": "5000"
+        }
+    },
+    {
+        "id": "002",
+        "name": "Jane Smith",
+        "address": "456 Oak Avenue, Othertown, OT 67890",
+        "officeLocation": "Regional Office",
+        "jobTitle": "Project Manager",
+        "contactDetails": {
+            "email": "janesmith@example.com",
+            "phone": "555-0200"
+        },
+        "salaryDetails": {
+            "baseSalary": "80000",
+            "currency": "USD",
+            "bonus": "6000"
+        }
+    },
+    {
+        "id": "003",
+        "name": "Alice Johnson",
+        "address": "789 Pine Road, Sometown, ST 90123",
+        "officeLocation": "Branch Office",
+        "jobTitle": "Marketing Director",
+        "contactDetails": {
+            "email": "alicejohnson@example.com",
+            "phone": "555-0300"
+        },
+        "salaryDetails": {
+            "baseSalary": "90000",
+            "currency": "USD",
+            "bonus": "7000"
+        }
+    },
+    {
+        "id": "004",
+        "name": "David Brown",
+        "address": "321 Cedar Blvd, New City, NC 45678",
+        "officeLocation": "Headquarters",
+        "jobTitle": "HR Manager",
+        "contactDetails": {
+            "email": "davidbrown@example.com",
+            "phone": "555-0400"
+        },
+        "salaryDetails": {
+            "baseSalary": "75000",
+            "currency": "USD",
+            "bonus": "5500"
+        }
+    },
+    {
+        "id": "005",
+        "name": "Emma Wilson",
+        "address": "987 Elm Street, Oldtown, OT 11223",
+        "officeLocation": "Regional Office",
+        "jobTitle": "Sales Representative",
+        "contactDetails": {
+            "email": "emmawilson@example.com",
+            "phone": "555-0500"
+        },
+        "salaryDetails": {
+            "baseSalary": "65000",
+            "currency": "USD",
+            "bonus": "4000"
+        }
+    },
+    {
+        "id": "006",
+        "name": "Michael Clark",
+        "address": "654 Willow Way, Lake City, LC 77889",
+        "officeLocation": "Branch Office",
+        "jobTitle": "IT Specialist",
+        "contactDetails": {
+            "email": "michaelclark@example.com",
+            "phone": "555-0600"
+        },
+        "salaryDetails": {
+            "baseSalary": "72000",
+            "currency": "USD",
+            "bonus": "5200"
+        }
+    },
+    {
+        "id": "007",
+        "name": "Sophia Turner",
+        "address": "213 Oak Lane, Hilltown, HT 33445",
+        "officeLocation": "Headquarters",
+        "jobTitle": "Quality Analyst",
+        "contactDetails": {
+            "email": "sophiaturner@example.com",
+            "phone": "555-0700"
+        },
+        "salaryDetails": {
+            "baseSalary": "68000",
+            "currency": "USD",
+            "bonus": "4600"
+        }
+    },
+    {
+        "id": "008",
+        "name": "Ethan Harris",
+        "address": "568 Maple Avenue, Greentown, GT 55677",
+        "officeLocation": "Regional Office",
+        "jobTitle": "Financial Advisor",
+        "contactDetails": {
+            "email": "ethanharris@example.com",
+            "phone": "555-0800"
+        },
+        "salaryDetails": {
+            "baseSalary": "83000",
+            "currency": "USD",
+            "bonus": "6200"
+        }
+    },
+    {
+        "id": "009",
+        "name": "Olivia Martinez",
+        "address": "742 Pine Street, Coast City, CC 12333",
+        "officeLocation": "Branch Office",
+        "jobTitle": "Graphic Designer",
+        "contactDetails": {
+            "email": "oliviamartinez@example.com",
+            "phone": "555-0900"
+        },
+        "salaryDetails": {
+            "baseSalary": "70000",
+            "currency": "USD",
+            "bonus": "5000"
+        }
+    },
+    {
+        "id": "010",
+        "name": "William Anderson",
+        "address": "369 Birch Road, Mountain Town, MT 99876",
+        "officeLocation": "Headquarters",
+        "jobTitle": "Operations Manager",
+        "contactDetails": {
+            "email": "williamanderson@example.com",
+            "phone": "555-1000"
+        },
+        "salaryDetails": {
+            "baseSalary": "78000",
+            "currency": "USD",
+            "bonus": "5800"
+        }
+    }
+]
