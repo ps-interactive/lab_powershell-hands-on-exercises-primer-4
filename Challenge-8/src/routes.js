@@ -1,6 +1,23 @@
 const express = require('express');
 const fs = require('fs');
+const sql = require('mssql');
 const router = express.Router();
+
+const sqlConfig = {
+    user: 'dbconnect',
+    password: 'Pass@word1',
+    database: 'Employees',
+    server: 'localhost',
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
+    },
+    options: {
+        encrypt: false,
+        trustServerCertificate: true
+    }
+};
 
 // Authentication
 // Token-based authentication
@@ -110,14 +127,46 @@ function searchCompanies(companies, searchText) {
     );
 }
 
+// Retrieve employees from database
+async function getDatabaseEmployees() {
+    try {
+        await sql.connect(sqlConfig);
+        const result = await sql.query(`SELECT 
+        E.EmployeeID AS "@id",
+        E.Name AS "name",
+        E.Address AS "address",
+        E.OfficeLocation AS "officeLocation",
+        E.JobTitle AS "jobTitle",
+        (
+            SELECT CD.Email AS "email", CD.Phone AS "phone"
+            FROM ContactDetails CD
+            WHERE CD.EmployeeID = E.EmployeeID
+            FOR XML PATH('contactDetails'), TYPE
+        ),
+        (
+            SELECT SD.BaseSalary AS "baseSalary", SD.Currency AS "currency", SD.Bonus AS "bonus"
+            FROM SalaryDetails SD
+            WHERE SD.EmployeeID = E.EmployeeID
+            FOR XML PATH('salaryDetails'), TYPE
+        )
+    FROM Employees E
+    FOR XML PATH('employee'), ROOT('employees');    
+    `);
+        return result.recordset[0]["XML_F52E2B61-18A1-11d1-B105-00805F49916B"];
+    } catch (err) {
+        console.error(err);
+        // Handle errors here
+    }
+}
+
 // Search employees based on query with partial matching
 function searchEmployees(employees, query) {
-    return employees.filter(employee => 
-        Object.values(employee).some(value => 
+    return employees.filter(employee =>
+        Object.values(employee).some(value =>
             typeof value === 'object' && value !== null ?
-            Object.values(value).some(subValue => 
-                subValue.toString().toLowerCase().includes(query.toLowerCase())) :
-            value.toString().toLowerCase().includes(query.toLowerCase())
+                Object.values(value).some(subValue =>
+                    subValue.toString().toLowerCase().includes(query.toLowerCase())) :
+                value.toString().toLowerCase().includes(query.toLowerCase())
         )
     );
 }
@@ -308,8 +357,8 @@ router.get('/companies/:id', (req, res) => {
 
 // Authentication routes
 router.get('/tokenAuth', tokenAuth, (req, res) => {
-        const employees = getEmployees();
-        res.json(employees);
+    const employees = getEmployees();
+    res.json(employees);
 });
 
 router.get('/apiTokenAuth', apiTokenAuth, (req, res) => {
@@ -334,6 +383,18 @@ router.post('/userPassAuth', userPassAuth, (req, res) => {
         res.json(employees);
     } else {
         res.status(403).send('Unauthorized access.');
+    }
+});
+
+// Retrieve employees from database
+router.get('/employees', async (req, res) => {
+    try {
+        const employees = await getDatabaseEmployees();
+        res.type('application/xml');
+        res.setHeader('Content-Type', 'application/xml');
+        res.send(employees);
+    } catch (err) {
+        res.status(500).send('Error retrieving employees');
     }
 });
 

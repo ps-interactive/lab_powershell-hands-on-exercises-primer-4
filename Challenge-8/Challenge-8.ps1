@@ -107,7 +107,7 @@ Invoke-RestMethod -Uri "$apiUrl/companies/$companyId" -Method Delete
 
 
 ############################
-## Step 45 Authentication ##
+## Step 5: Authentication ##
 ############################
 
 # Login and Return Employees using Token
@@ -120,8 +120,8 @@ Invoke-RestMethod -Uri "$apiUrl/apiTokenAuth" -Method Get -Headers $headers
 
 # Login and Return Employees using Credentials
 $body = @{
-    username = "user1"
-    password = "password1"
+    username = $username
+    password = $password
     search = "Wil"
     fields = "name,contactDetails.email,salaryDetails.baseSalary,address,jobTitle"
 } | ConvertTo-Json
