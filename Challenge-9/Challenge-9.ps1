@@ -30,7 +30,7 @@ $firewalllog
 ################################
 ## Step 3: Analyzing Log Data ##
 ################################
-function Analyze-FirewallLog {
+function Invoke-AnalyzeFirewallLog {
     param(
         [Parameter(Mandatory)]
         [pscustomobject[]]$ParsedLogData
@@ -45,7 +45,7 @@ function Analyze-FirewallLog {
     }
 }
 
-$firewallAnalysis = Analyze-FirewallLog -ParsedLogData $firewallLog
+$firewallAnalysis = Invoke-AnalyzeFirewallLog -ParsedLogData $firewallLog
 $firewallAnalysis.ConnectionSummary
 $firewallAnalysis.PotentialThreats
 
