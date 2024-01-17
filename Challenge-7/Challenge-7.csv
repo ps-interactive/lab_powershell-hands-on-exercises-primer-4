@@ -1,0 +1,3 @@
+DisplayName,Direction,Protocol,LocalPort,Action
+PWSH Allow HTTP Inbound,Inbound,TCP,80,Allow
+PWSH Block Telnet Outbound,Outbound,TCP,23,Block
