@@ -97,7 +97,7 @@ Restore-SqlDatabase -ServerInstance $sqlInstance -Database $newDatabaseName -Bac
 #########################
 ## Step 4: Add Logging ##
 #########################
-# Function for Backing Up a Database and Provifing Logging
+# Function for Backing Up a Database and Providing Logging
 function Backup-Database {
     param (
         [Parameter(Mandatory=$true)]
@@ -179,6 +179,118 @@ $backupPath = "$path\AdventureWorks2022-F.bak"
 Restore-Database -sqlInstance $sqlInstance -databaseName $databaseName -backupPath $backupPath
 
 
+# Function for Restoring a Database as a New Database and Providing Logging
+function Restore-DatabaseAsNew {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$sqlInstance,
+        [Parameter(Mandatory=$true)]
+        [string]$databaseName,
+        [Parameter(Mandatory=$true)]
+        [string]$backupPath,
+        [Parameter(Mandatory=$true)]
+        [string]$newDatabaseName
+    )
+    $success = $true
+
+    Write-Host "Restoring the database..."
+    $sqlFilePath = "C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA"
+    $mdfPath = "$sqlFilePath\$newDatabaseName.mdf"
+    $ldfPath = "$sqlFilePath\$newDatabaseName_log.ldf"
+    $data = New-Object Microsoft.SqlServer.Management.Smo.RelocateFile("$($databaseName)", "$mdfPath")
+    $log = New-Object Microsoft.SqlServer.Management.Smo.RelocateFile("$($databaseName)_Log", "$ldfPath")
+    Restore-SqlDatabase -ServerInstance $sqlInstance -Database $newDatabaseName -BackupFile "$backupPath" -RelocateFile @($data,$log)
+    if ($?) {
+        Write-Host "Database restore completed successfully."
+    } else {
+        Write-Host "Failed to restore the database."
+        $success = $false
+    }
+
+    return $success
+}
+
+# Execute the Function
+$databaseName = "AdventureWorks2022"
+$path = "C:\PowerShell\Database"
+$backupPath = "$path\AdventureWorks2022-F.bak"
+$newDatabaseName = "AdventureWorks2023"
+Restore-DatabaseAsNew -sqlInstance $sqlInstance -databaseName $databaseName -backupPath $backupPath -newDatabaseName $newDatabaseName
+
+
+# Function to Backup ALL Databases and Provide a CSV Report of the Backup
+function Backup-AllDatabases {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$sqlInstance,
+        [Parameter(Mandatory=$true)]
+        [string]$backupPath
+    )
+    $success = $true
+    $output = @()
+
+    Write-Host "Setting database recovery mode to FULL..."
+    $Query = "ALTER DATABASE [$databaseName] SET RECOVERY FULL;"
+    Invoke-Sqlcmd -ServerInstance $sqlInstance -Query $Query -Username $username -Password $password -TrustServerCertificate:$true
+    if ($?) {
+        Write-Host "Database recovery mode set to FULL successfully."
+        $output += [PSCustomObject]@{
+            Step = "Set Recovery Mode to FULL"
+            Status = "Success"
+        }
+    } else {
+        Write-Host "Failed to set database recovery mode to FULL."
+        $success = $false
+        $output += [PSCustomObject]@{
+            Step = "Set Recovery Mode to FULL"
+            Status = "Failure"
+        }
+    }
+
+    Write-Host "Backing up the database..."
+    Backup-SqlDatabase -ServerInstance $sqlInstance -Database $databaseName -BackupFile $backupPath -BackupAction Database
+    if ($?) {
+        Write-Host "Database backup completed successfully."
+        $output += [PSCustomObject]@{
+            Step = "Database Backup"
+            Status = "Success"
+        }
+    } else {
+        Write-Host "Failed to backup the database."
+        $success = $false
+        $output += [PSCustomObject]@{
+            Step = "Database Backup"
+            Status = "Failure"
+        }
+    }
+
+    Write-Host "Setting database recovery mode to SIMPLE..."
+    $Query = "ALTER DATABASE [$databaseName] SET RECOVERY SIMPLE;"
+    Invoke-Sqlcmd -ServerInstance $sqlInstance -Query $Query -Username $username -Password $password -TrustServerCertificate:$true
+    if ($?) {
+        Write-Host "Database recovery mode set to SIMPLE successfully."
+        $output += [PSCustomObject]@{
+            Step = "Set Recovery Mode to SIMPLE"
+            Status = "Success"
+        }
+    } else {
+        Write-Host "Failed to set database recovery mode to SIMPLE."
+        $success = $false
+        $output += [PSCustomObject]@{
+            Step = "Set Recovery Mode to SIMPLE"
+            Status = "Failure"
+        }
+    }
+
+    $output | Export-Csv -Path "C:\PowerShell\Database\BackupReport.csv" -NoTypeInformation
+
+    return $success
+}
+
+# Execute the Function
+$path = "C:\PowerShell\Database"
+$backupPath = "$path\AdventureWorks2022-F.bak"
+Backup-AllDatabases -sqlInstance $sqlInstance -backupPath $backupPath
 
 
 

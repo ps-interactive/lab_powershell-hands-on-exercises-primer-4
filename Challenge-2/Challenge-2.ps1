@@ -176,5 +176,4 @@ Start-Sleep -Seconds 30
 Stop-NetworkTrace
 
 # Analyze the captured network trace
-Invoke-AnalyzeNetworkTrace -CaptureFileName $traceFileName
-
+Invoke-AnalyzeNetworkTrace -CaptureFileName $traceFileName -Protocol "tcp"
