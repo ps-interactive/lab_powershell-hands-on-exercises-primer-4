@@ -7,8 +7,6 @@ $path = "C:\Users\Public\Desktop\LAB_FILES\Challenge-9\"
 $firewallPath = $path + "Challenge-9.csv"
 $output = $path + "FirewallReport.txt"
 
-$path = "./Challenge-9/"
-
 
 ############################################################
 ## Step 2: Loading and Parsing Windows Firewall Log Files ##

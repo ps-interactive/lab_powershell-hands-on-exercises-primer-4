@@ -3,7 +3,7 @@
 ############################################
 
 # Variables
-$path = "C:\Users\Public\Desktop\LAB_FILES\"
+$path = "C:\Users\Public\Desktop\LAB_FILES\Challenge-4\"
 $now = Get-Date
 $before = $now.AddMinutes(-1)
 $output = $path + "Output.log"
