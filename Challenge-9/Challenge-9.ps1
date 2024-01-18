@@ -76,7 +76,7 @@ function New-AnalysisReport {
 }
 
 New-AnalysisReport -AnalysisResults $firewallAnalysis -ReportFilePath $output
-
+Get-Content -Path $output
 
 
 

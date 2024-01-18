@@ -3,7 +3,8 @@
 ##############################
 
 # Define the variables
-$interfaceToCapture = "Ethernet"
+$interfaceToCapture = Get-NetAdapter | Where-Object { $_.InterfaceDescription -notlike "*Loopback*" }
+$interfaceToCapture = $interfaceToCapture.ifIndex
 $localPath = "C:\PowerShell\Network"
 $tsharkPath = "C:\Program Files\Wireshark"
 
@@ -37,7 +38,7 @@ Stop-NetEventSession -Name $sessionName
 # Remove the packet capture session
 Remove-NetEventSession -Name $sessionName
 
-# Display the captured packets
+# Convert the captured packets into a text file
 netsh trace convert $localFilePath
 
 
@@ -78,7 +79,7 @@ function Invoke-NetworkCapture {
     $tsharkCommand = & "$tsharkPath\tshark.exe" `-i $Interface `-a duration:$Duration `-w $outputFile `-f "$CaptureFilter"
 
     # Execute the command
-    Invoke-Expression $tsharkCommand
+    Invoke-Expression -ScriptBlock $tsharkCommand
 
     # Return the path to the output file
     return $outputFile
