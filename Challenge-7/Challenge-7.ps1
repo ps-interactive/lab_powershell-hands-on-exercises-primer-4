@@ -5,7 +5,7 @@
 # Variables
 $path = "C:\Users\Public\Desktop\LAB_FILES\Challenge-7\"
 $csv = $path + "Challenge-7.csv"
-$output = $path + "FirewallRulesReport.txt"
+$output = "C:\PowerShell\Logs\FirewallRulesReport.txt"
 
 
 ####################################################
@@ -18,8 +18,6 @@ Get-NetFirewallRule
 # Retrieve all firewall rules and display selected properties in a table format
 Get-NetFirewallRule | 
     Select-Object -Property Name, DisplayName, Enabled, Direction, Action | 
-    Format-Table -AutoSize
-
 
 # Add a new firewall rule allowing inbound TCP traffic on port 80
 New-NetFirewallRule -DisplayName "Allow HTTP Inbound" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
@@ -61,14 +59,9 @@ Import-FirewallRulesFromCSV -CsvFilePath $csv
 ###########################################
 ## Step 4: Check the Created Rules ##
 ###########################################
-# Check the newly created rules
-Get-NetFirewallRule
-
 # Get all firewall rules where the name starts with 'PWSH'
 $rules = Get-NetFirewallRule | Where-Object { $_.DisplayName -like "PWSH*" }
-
-# Display the retrieved rules
-$rules
+$rules | Select-Object DisplayName
 
 # Delete the retrieved rules
 $rules | Remove-NetFirewallRule

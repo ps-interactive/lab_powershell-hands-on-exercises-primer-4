@@ -37,9 +37,9 @@ $runspace.Close()
 $runspace.Dispose()
 
 
-#################################
+##################################
 ## Step 3: Using a RunspacePool ##
-#################################
+##################################
 # Create a RunspacePool
 $runspacePool = [runspacefactory]::CreateRunspacePool(1, $MaxThreads)
 $runspacePool.Open()
@@ -65,7 +65,7 @@ $runspacePool.Dispose()
 
 
 #############################################################
-## Step 3: Create a Basic Multi-threaded PowerShell Script ##
+## Step 4: Create a Basic Multi-threaded PowerShell Script ##
 #############################################################
 function Start-ParallelTasks {
     param(
@@ -105,7 +105,7 @@ Start-ParallelTasks -TaskList $TaskList
 
 
 ######################################
-## Step 4: Implement Error Handling ##
+## Step 5: Implement Error Handling ##
 ######################################
 function Start-ParallelTasks {
     param(
@@ -148,10 +148,62 @@ function Start-ParallelTasks {
     $runspacePool.Dispose()
 }
 
+
 # Execute the function but simulate an error
 $TaskList = @('Task1', 'Task2', 'Error', 'Task4')
 Start-ParallelTasks -TaskList $TaskList
 
+
+##################################
+## Step 6: Use Real-world Tasks ##
+##################################
+function Start-ParallelTasks {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$TaskList
+    )
+
+    $runspacePool = [runspacefactory]::CreateRunspacePool(1, [Environment]::ProcessorCount)
+    $runspacePool.Open()
+
+    $powershellInstances = foreach ($task in $TaskList) {
+        $powershell = [powershell]::Create().AddScript({
+            param($task)
+            try {
+                # Execute the actual PowerShell command
+                $output = Invoke-Expression $task
+                "Completed task: $task. Output: $output"
+            } catch {
+                "Error in task: $task. Error: $_"
+            }
+        }).AddArgument($task)
+
+        $powershell.RunspacePool = $runspacePool
+        [PSCustomObject]@{
+            Pipeline = $powershell.BeginInvoke()
+            Powershell = $powershell
+        }
+    }
+
+    foreach ($instance in $powershellInstances) {
+        $result = $instance.Powershell.EndInvoke($instance.Pipeline)
+        $instance.Powershell.Dispose()
+        Write-Output $result
+    }
+
+    $runspacePool.Close()
+    $runspacePool.Dispose()
+}
+
+# Example usage
+
+$TaskList = @(
+    'Get-NetAdapter | Select-Object Name, Status',
+    'Get-Service -Name wuauserv | Select-Object Name, Status',
+    'Get-Date',
+    'NonExistent-Command'
+)
+Start-ParallelTasks -TaskList $TaskList
 
 
 
