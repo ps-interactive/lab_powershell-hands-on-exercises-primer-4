@@ -5,7 +5,7 @@
 # Variables
 $path = "C:\Users\Public\Desktop\LAB_FILES\"
 $log = $path + "Challenge-5\Challenge-5.log"
-$summary = $path + "Challenge-5\SummaryReport.txt"
+$summary = "C:\PowerShell\Logs\SummaryReport.txt"
 
 
 ##############################
