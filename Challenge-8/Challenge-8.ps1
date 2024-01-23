@@ -3,7 +3,7 @@
 ##############################
 
 $apiUrl = "http://localhost:3000/api"
-
+$user = "Frank Harris"
 $token = "2XDluXfHvkGwdVkWlxn4FA"
 $apiToken = "opbqdPZiNDU2jFVXnybvsvlrtgGiqWSwMkdfqqzyMzCf8YjFC5VTtnncVk9EoesEOCTWOUb0TtHbHwmQIq9jJXfgYS5Zh9B4kzruHPTPUPkMprEwU9MhcNQSdefzx4Nnn1ofeKiGbiG7k9RpCY6K4t6DavS06sbQTBje1Ndevx4x8ZkGGDZZGf4nM5vFBTR79yk1d1NhUQrYn18N8mP0k85cE9nmCuT5yjWr000iXSLnOqyRGbgDwjpoc7mgwTPzdx0bGK2BiJmwK7ntplFykYwO6w8lelmPU7q0Y8U7odCQaTeEBmvB4i5CGPlarmZx"
 $username = "user1"
@@ -17,7 +17,7 @@ $password = "password1"
 Invoke-RestMethod -Uri "$apiUrl/users" -Method Get
 
 # Retrieve User from API
-Invoke-RestMethod -Uri "$apiUrl/users/$username" -Method Get
+Invoke-RestMethod -Uri "$apiUrl/users/8" -Method Get
 
 # Create User
 $body = @{
@@ -27,7 +27,7 @@ $body = @{
 Invoke-RestMethod -Uri "$apiUrl/users" -Method Post -Body $body -ContentType "application/json"
 
 # Update User
-$userId = "1"
+$userId = "11"
 $body = @{
     name = "Updated Name"
     email = "updatedemail@example.com"
@@ -35,12 +35,12 @@ $body = @{
 Invoke-RestMethod -Uri "$apiUrl/users/$userId" -Method Put -Body $body -ContentType "application/json"
 
 # Delete User
-$userId = "1"
+$userId = "11"
 Invoke-RestMethod -Uri "$apiUrl/users/$userId" -Method Delete
 
 
 #######################
-## Step 3: Landmarks ##
+## Step 2: Landmarks ##
 #######################
 # Retrieve Landmarks from API
 Invoke-RestMethod -Uri "$apiUrl/landmarks" -Method Get
@@ -74,7 +74,7 @@ Invoke-RestMethod -Uri "$apiUrl/landmarks/$landmarkId" -Method Delete
 
 
 #######################
-## Step 4: Companies ##
+## Step 2: Companies ##
 #######################
 # Retrieve Companies from API
 Invoke-RestMethod -Uri "$apiUrl/companies" -Method Get
@@ -107,7 +107,7 @@ Invoke-RestMethod -Uri "$apiUrl/companies/$companyId" -Method Delete
 
 
 ############################
-## Step 5: Authentication ##
+## Step 3: Authentication ##
 ############################
 
 # Login and Return Employees using Token
@@ -126,6 +126,28 @@ $body = @{
     fields = "name,contactDetails.email,salaryDetails.baseSalary,address,jobTitle"
 } | ConvertTo-Json
 Invoke-RestMethod -Uri "$apiUrl/userPassAuth" -Method Post -Body $body -ContentType "application/json"
+
+# Login and Return Employees using Credentials, then Filter the Results to 70000
+$body = @{
+    username = $username
+    password = $password
+    search = "70000"
+    fields = "name,contactDetails.email,salaryDetails.baseSalary,address,jobTitle"
+} | ConvertTo-Json
+Invoke-RestMethod -Uri "$apiUrl/userPassAuth" -Method Post -Body $body -ContentType "application/json"
+
+# Login and Return Employees using Credentials, Retrieve ALL records then filter in PowerShell
+$body = @{
+    username = $username
+    password = $password
+    search = "*"
+    fields = "name,contactDetails.email,salaryDetails.baseSalary,address,jobTitle"
+} | ConvertTo-Json
+
+$employees = Invoke-RestMethod -Uri "$apiUrl/userPassAuth" -Method Post -Body $body -ContentType "application/json"
+$employees
+
+$employees | Where-Object { $_.'salaryDetails.baseSalary' -ge 70000 }
 
 
 

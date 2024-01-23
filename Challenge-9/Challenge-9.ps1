@@ -5,7 +5,8 @@
 # Variables
 $path = "C:\Users\Public\Desktop\LAB_FILES\Challenge-9\"
 $firewallPath = $path + "Challenge-9.csv"
-$output = $path + "FirewallReport.txt"
+$output = "C:\PowerShell\Logs\FirewallReport.txt"
+$htmlOutput = "C:\PowerShell\Logs\FirewallReport.html"
 
 
 ############################################################
@@ -77,6 +78,69 @@ function New-AnalysisReport {
 
 New-AnalysisReport -AnalysisResults $firewallAnalysis -ReportFilePath $output
 Get-Content -Path $output
+
+
+##############################################
+## Step 5: Create a Detailed Report as HTML ##
+##############################################
+function New-HtmlAnalysisReport {
+    param(
+        [Parameter(Mandatory)]
+        [hashtable]$AnalysisResults,
+        [Parameter(Mandatory)]
+        [string]$ReportFilePath
+    )
+    # Start building HTML content
+    $reportContent = @"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firewall Analysis Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { color: #333366; }
+        h2 { color: #666699; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+        th { background-color: #eeeeee; }
+    </style>
+</head>
+<body>
+    <h1>Firewall Analysis Report</h1>
+    <h2>Connection Summary</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Occurrences</th>
+        </tr>
+"@
+    foreach ($item in $AnalysisResults.ConnectionSummary) {
+        $reportContent += "<tr><td>$($item.Name)</td><td>$($item.Count)</td></tr>`n"
+    }
+    $reportContent += @"
+    </table>
+    <h2>Potential Security Threats (TCP Drops)</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Source IP</th>
+            <th>Destination IP</th>
+        </tr>
+"@
+    foreach ($threat in $AnalysisResults.PotentialThreats) {
+        $reportContent += "<tr><td>$($threat.Date)</td><td>$($threat.Time)</td><td>$($threat.SourceIP)</td><td>$($threat.DestinationIP)</td></tr>`n"
+    }
+    $reportContent += @"
+    </table>
+</body>
+</html>
+"@
+    # Save the HTML content to a file
+    Set-Content -Path $ReportFilePath -Value $reportContent
+}
+New-HtmlAnalysisReport -AnalysisResults $firewallAnalysis -ReportFilePath $htmlOutput
+Invoke-Item -Path $htmlOutput
 
 
 
