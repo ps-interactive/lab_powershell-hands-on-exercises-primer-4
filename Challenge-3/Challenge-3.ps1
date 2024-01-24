@@ -2,7 +2,7 @@
 ## Step 1: Set Variables and Prerequistes ##
 ############################################
 Import-Module SqlServer
-$sqlInstance = "."
+$sqlInstance = ".\SQLEXPRESS"
 
 ######################################
 ## Step 2: Backing Up SQL Databases ##
