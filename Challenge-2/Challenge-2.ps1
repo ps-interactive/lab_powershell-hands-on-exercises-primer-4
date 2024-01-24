@@ -45,7 +45,7 @@ netsh trace convert $localFilePath
 # Modify the variables to retrieve the txt file, and set the IP address
 $localFilePath = "$localPath\NetEventPacketCapture.etl"
 $localFilePath = $localFilePath.Replace(".etl", ".txt")
-$ip = "10.211.55.3"
+$ip = "172.31.24.20"
 
 # Display the captured packets by filtering for the IP address
 Get-Content $localFilePath | Where-Object { $_ -match "local=$ip" }
