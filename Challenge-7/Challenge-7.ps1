@@ -17,7 +17,8 @@ Get-NetFirewallRule
 
 # Retrieve all firewall rules and display selected properties in a table format
 Get-NetFirewallRule | 
-    Select-Object -Property Name, DisplayName, Enabled, Direction, Action | 
+    Select-Object -Property Name, DisplayName, Enabled, Direction, Action |
+    Format-Table -AutoSize
 
 # Add a new firewall rule allowing inbound TCP traffic on port 80
 New-NetFirewallRule -DisplayName "Allow HTTP Inbound" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
